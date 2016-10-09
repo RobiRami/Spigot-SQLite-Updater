@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
@@ -19,7 +20,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.GroupLayout.Alignment;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class GUI extends JFrame {
@@ -62,6 +62,11 @@ public class GUI extends JFrame {
         			displayError("Please select your Spigot .jar file first.");
         			return;
         		}
+        		try {
+					SpigotUpdater.INSTANCE.getUpdater().update(jarFile);
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
         	}
         });
         JPanel panel = new JPanel();
