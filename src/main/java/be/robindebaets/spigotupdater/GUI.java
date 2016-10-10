@@ -20,10 +20,12 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class GUI extends JFrame {
 	private static final long serialVersionUID = 1L;
+	private JLabel statusLabel;
 	private JLabel currentFile;
 	private File jarFile;
 	private Font roboto;
@@ -31,7 +33,7 @@ public class GUI extends JFrame {
 		roboto = getFont("Roboto.ttf");
 		setTitle("Spigot SQLiteUpdater");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setMinimumSize(new Dimension(400, 400));
+        setMinimumSize(new Dimension(400, 200));
         setBackground(Color.DARK_GRAY);
         setDefaultLookAndFeelDecorated(true);
         setLocationRelativeTo(null);
@@ -52,21 +54,26 @@ public class GUI extends JFrame {
     			}
         	}
         });
-        JLabel statusLabel = new JLabel("");
+        statusLabel = new JLabel("Waiting for .jar file to be selected");
        	statusLabel.setFont(roboto.deriveFont(12F));
         JButton updateButton = new JButton("Update");
         updateButton.setFont(roboto.deriveFont(12F));
         updateButton.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
-        		if(jarFile == null) {
-        			displayError("Please select your Spigot .jar file first.");
-        			return;
-        		}
-        		try {
-					SpigotUpdater.INSTANCE.getUpdater().update(jarFile);
-				} catch (IOException e1) {
-					e1.printStackTrace();
-				}
+    		   new Thread(new Runnable() {
+    		        @Override
+    		        public void run() {
+    	        		if(jarFile == null) {
+    	        			displayError("Please select your Spigot .jar file first.");
+    	        			return;
+    	        		}
+    	        		try {
+    						SpigotUpdater.INSTANCE.getUpdater().update(jarFile);
+    					} catch (IOException e1) {
+    						e1.printStackTrace();
+    					}
+    		        }     
+    		    }).start();
         	}
         });
         JPanel panel = new JPanel();
@@ -96,17 +103,30 @@ public class GUI extends JFrame {
         Toolkit.getDefaultToolkit().beep();
 
 	}
+	public void updateStatus(final String status) {
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				statusLabel.setText(status);
+			}
+		});
+	}
 	private Font getFont(String fontName) throws IOException, FontFormatException {
 	    InputStream is = GUI.class.getClassLoader().getResourceAsStream(fontName);
 	    Font font = Font.createFont(Font.TRUETYPE_FONT, is).deriveFont(Font.PLAIN);
 		is.close();
 		return font;
 	}
-	private void displayError(String error) {
-		Toolkit.getDefaultToolkit().beep();
-	    JOptionPane optionPane = new JOptionPane(error, JOptionPane.WARNING_MESSAGE);
-		JDialog dialog = optionPane.createDialog("Alert!");
-	    dialog.setAlwaysOnTop(true);
-	    dialog.setVisible(true);
+	private void displayError(final String error) {
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				Toolkit.getDefaultToolkit().beep();
+			    JOptionPane optionPane = new JOptionPane(error, JOptionPane.WARNING_MESSAGE);
+				JDialog dialog = optionPane.createDialog("Alert!");
+			    dialog.setAlwaysOnTop(true);
+			    dialog.setVisible(true);
+			}
+		});
 	}
 }

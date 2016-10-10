@@ -15,4 +15,7 @@ public enum SpigotUpdater {
 	public Updater getUpdater() {
 		return updater;
 	}
+	public GUI getGui() {
+		return gui;
+	}
 }
