@@ -20,6 +20,7 @@ import org.jsoup.nodes.Element;
 
 public class Updater {
 	public void update(File input) throws IOException {
+		SpigotUpdater.INSTANCE.getGui().setStatus("Starting update.");
 		Document snapshotPage = Jsoup.connect("https://oss.sonatype.org/content/repositories/snapshots/org/xerial/sqlite-jdbc/").get();
 		String snapshot = snapshotPage.select("a").get(1).attr("href");
 		Document artifacts = Jsoup.connect(snapshot).get();
@@ -30,6 +31,11 @@ public class Updater {
 				break;
 			}
 		}
+		if(latestJar == null) {
+			SpigotUpdater.INSTANCE.getGui().displayError("Please select your Spigot .jar file first.");
+			return;
+		}
+		SpigotUpdater.INSTANCE.getGui().setStatus("Found file: " + latestJar.substring(latestJar.lastIndexOf("/") + 1, latestJar.length()));
 		File outputNew = new File(input.getPath().replace(".jar", "-UPDATED.jar"));
 		if(!outputNew.exists()) outputNew.createNewFile();
 		FileOutputStream outNewStream = new FileOutputStream(outputNew);
@@ -55,6 +61,7 @@ public class Updater {
 	    		}
 	    	}
 	    }
+		SpigotUpdater.INSTANCE.getGui().setStatus("Finished downloading file.");
 		ZipFile jarZip = new ZipFile(output);
 		Enumeration<? extends ZipEntry> newEntries = jarZip.entries();
 	    while(newEntries.hasMoreElements()) {
@@ -75,6 +82,7 @@ public class Updater {
 	    inputZip.close();
 	    newZip.close();
 	    outNewStream.close();
+		SpigotUpdater.INSTANCE.getGui().setStatus("Finished zipping to new file.");
 //	    ZipFile newJar = new ZipFile(outputNew);
 //	    Enumeration<? extends ZipEntry> updatedEntries = newJar.entries();
 //	    while(updatedEntries.hasMoreElements()) {
@@ -82,8 +90,8 @@ public class Updater {
 //	    	System.out.println(e.getName());
 //	    }
 //	    newJar.close();
-	    System.out.println((outputNew.length() / (1024 * 1024)));
-	    System.out.println("Finished");
+//	    System.out.println((outputNew.length() / (1024 * 1024)));
+//	    System.out.println("Finished");
 	}
 	private File getFile(String url, String name, String extension) throws IOException {
 		File file = Files.createTempFile(name, extension).toFile();
