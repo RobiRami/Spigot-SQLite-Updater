@@ -13,4 +13,5 @@ Click update and wait until it updates. Check the -UPDATED.jar file in the folde
 <img src=https://proxy.spigotmc.org/54bd827b4948526b444a660500bc27a7223250ce?url=http%3A%2F%2Fi.robindebaets.be%2F21-14-23.png>
 
 Download: https://robindebaets.be/tools/Spigot-SQLite-Updater.jar
+
 Information: https://www.spigotmc.org/resources/spigot-sqlite-updater.30267/
